@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
+import AppHeader from "./AppHeader";
+import MicroFrontend from "./MicroFrontend.js";
+import About from "./About.js";
+import React from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const {
+  REACT_APP_BROWSE_HOST: browseHost,
+  REACT_APP_RESTAURANT_HOST: restaurantHost,
+} = process.env;
+
+let numRestaurants = 0;
+const getRandomRestaurantId = () =>
+  Math.floor(Math.random() * numRestaurants) + 1;
+
+const Browse = ({ history }) => (
+  <MicroFrontend history={history} host={browseHost} name="Browse" />
+);
+const Restaurant = ({ history }) => (
+  <MicroFrontend history={history} host={restaurantHost} name="Restaurant" />
+);
+const Random = () => <Redirect to={`/restaurant/${getRandomRestaurantId()}`} />;
+
+const App = () => (
+  <BrowserRouter>
+    <React.Fragment>
+      <AppHeader />
+      <Switch>
+        <Route exact path="/" component={Browse} />
+        <Route exact path="/restaurant/:id" component={Restaurant} />
+        <Route exact path="/random" render={Random} />
+        <Route exact path="/about" render={About} />
+      </Switch>
+    </React.Fragment>
+  </BrowserRouter>
+);
 
 export default App;
